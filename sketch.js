@@ -15,18 +15,28 @@ Learning goals:
 - Explore how small math changes affect “game feel”
 */
 
-const VIEW_W = 800;
-const VIEW_H = 480;
+const VIEW_W = 500;
+const VIEW_H = 450;
 
 let worldData;
 let level;
 let player;
+let bgImage;
+let playerSprites = {};
 
 let camX = 0;
 let camY = 0;
 
 function preload() {
   worldData = loadJSON("world.json"); // load JSON before setup [web:122]
+  bgImage = loadImage("Assets/backgrund.png"); // load background image
+  
+  // Load player sprites
+  playerSprites.rest = loadImage("Assets/gorest.png");
+  playerSprites.right = loadImage("Assets/goright.png");
+  playerSprites.left = loadImage("Assets/goleft.png");
+  playerSprites.up = loadImage("Assets/goup.png");
+  playerSprites.down = loadImage("Assets/gostraight.png");
 }
 
 function setup() {
@@ -34,10 +44,11 @@ function setup() {
   textFont("sans-serif");
   textSize(14);
 
-  level = new WorldLevel(worldData);
+  level = new WorldLevel(worldData, bgImage);
 
-  const start = worldData.playerStart ?? { x: 300, y: 300, speed: 3 };
-  player = new Player(start.x, start.y, start.speed);
+  // Start player in middle of the map
+  const start = worldData.playerStart ?? { x: level.w / 2, y: level.h / 2, speed: 3 };
+  player = new Player(start.x, start.y, start.speed, playerSprites);
 
   camX = player.x - width / 2;
   camY = player.y - height / 2;
@@ -65,8 +76,6 @@ function draw() {
   camX = lerp(camX, targetX, camLerp);
   camY = lerp(camY, targetY, camLerp);
 
-  level.drawBackground();
-
   push();
   translate(-camX, -camY);
   level.drawWorld();
@@ -78,7 +87,7 @@ function draw() {
 
 function keyPressed() {
   if (key === "r" || key === "R") {
-    const start = worldData.playerStart ?? { x: 300, y: 300, speed: 3 };
-    player = new Player(start.x, start.y, start.speed);
+    const start = worldData.playerStart ?? { x: level.w / 2, y: level.h / 2, speed: 3 };
+    player = new Player(start.x, start.y, start.speed, playerSprites);
   }
 }

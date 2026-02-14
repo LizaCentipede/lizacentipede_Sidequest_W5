@@ -1,10 +1,11 @@
 class WorldLevel {
-  constructor(json) {
+  constructor(json, bgImage) {
     this.schemaVersion = json.schemaVersion ?? 1;
 
     this.w = json.world?.w ?? 2400;
     this.h = json.world?.h ?? 1600;
     this.bg = json.world?.bg ?? [235, 235, 235];
+    this.bgImage = bgImage;
     this.gridStep = json.world?.gridStep ?? 160;
 
     this.obstacles = json.obstacles ?? [];
@@ -18,9 +19,14 @@ class WorldLevel {
   }
 
   drawWorld() {
-    noStroke();
-    fill(this.bg[0], this.bg[1], this.bg[2]);
-    rect(0, 0, this.w, this.h);
+    // Draw background image in world coordinates (camera will offset it)
+    if (this.bgImage) {
+      image(this.bgImage, 0, 0, this.w, this.h);
+    } else if (Array.isArray(this.bg)) {
+      noStroke();
+      fill(this.bg[0], this.bg[1], this.bg[2]);
+      rect(0, 0, this.w, this.h);
+    }
 
     stroke(245);
     for (let x = 0; x <= this.w; x += this.gridStep) line(x, 0, x, this.h);
@@ -34,20 +40,5 @@ class WorldLevel {
   drawHUD(player, camX, camY) {
     noStroke();
     fill(20);
-    text("Example 4 — JSON world + smooth camera (lerp).", 12, 20);
-    text(
-      "camLerp(JSON): " +
-        this.camLerp +
-        "  Player: " +
-        (player.x | 0) +
-        "," +
-        (player.y | 0) +
-        "  Cam: " +
-        (camX | 0) +
-        "," +
-        (camY | 0),
-      12,
-      40,
-    );
   }
 }
