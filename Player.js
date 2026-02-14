@@ -30,9 +30,13 @@ class Player {
       this.currentSprite = "rest";
     }
 
+    // Apply speed boost when shift is held
+    const speedMultiplier = keyIsDown(SHIFT) ? 1.5 : 1;
+    const currentSpeed = this.s * speedMultiplier;
+
     const len = max(1, abs(dx) + abs(dy));
-    this.x += (dx / len) * this.s;
-    this.y += (dy / len) * this.s;
+    this.x += (dx / len) * currentSpeed;
+    this.y += (dy / len) * currentSpeed;
   }
 
   draw() {
